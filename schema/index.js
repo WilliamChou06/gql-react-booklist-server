@@ -1,4 +1,5 @@
 const graphql = require('graphql');
+const graphqlIsoDate = require('graphql-iso-date');
 const _ = require('lodash');
 const Book = require('../models/book');
 const Author = require('../models/author');
@@ -9,19 +10,25 @@ const {
   GraphQLList,
   GraphQLSchema,
   GraphQLID,
-  GraphQLNonNull
+  GraphQLNonNull,
+  GraphQLScalarType
 } = graphql;
+
+const { GraphQLDateTime } = graphqlIsoDate;
 
 const BookType = new GraphQLObjectType({
   name: 'Book',
   fields: () => ({
     id: { type: GraphQLID },
     title: { type: GraphQLString },
+    edition: { type: GraphQLDateTime },
     authors: {
-      type: new GraphQLList(AuthorType) ,
+      type: new GraphQLList(AuthorType),
       resolve(parent, args) {
         //  return Author.find({_id: parent.authorsId});
-        return Author.find().where('_id').in(parent.authorsId)
+        return Author.find()
+          .where('_id')
+          .in(parent.authorsId);
       }
     }
   })
@@ -35,7 +42,10 @@ const AuthorType = new GraphQLObjectType({
     books: {
       type: new GraphQLList(BookType),
       resolve(parent, args) {
-        return Book.find({ authorId: parent.id });
+        // return Book.find({ authorId: parent.id });
+        return Book.find()
+          .where('authorsId')
+          .in(parent.id);
       }
     }
   })
@@ -92,12 +102,14 @@ const Mutation = new GraphQLObjectType({
       type: BookType,
       args: {
         title: { type: new GraphQLNonNull(GraphQLString) },
-        authorsId: { type: new GraphQLNonNull(new GraphQLList (GraphQLID)) }
+        authorsId: { type: new GraphQLNonNull(new GraphQLList(GraphQLID)) },
+        edition: { type: GraphQLString }
       },
       resolve(parent, args) {
         let book = new Book({
           title: args.title,
-          authorsId: args.authorsId
+          authorsId: args.authorsId,
+          edition: args.edition
         });
         return book.save();
       }
