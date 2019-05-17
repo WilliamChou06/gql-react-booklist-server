@@ -17,10 +17,11 @@ const BookType = new GraphQLObjectType({
   fields: () => ({
     id: { type: GraphQLID },
     title: { type: GraphQLString },
-    author: {
-      type: AuthorType,
+    authors: {
+      type: new GraphQLList(AuthorType) ,
       resolve(parent, args) {
-        return Author.findById(parent.authorId);
+        //  return Author.find({_id: parent.authorsId});
+        return Author.find().where('_id').in(parent.authorsId)
       }
     }
   })
@@ -91,12 +92,12 @@ const Mutation = new GraphQLObjectType({
       type: BookType,
       args: {
         title: { type: new GraphQLNonNull(GraphQLString) },
-        authorId: { type: new GraphQLNonNull(GraphQLID) }
+        authorsId: { type: new GraphQLNonNull(new GraphQLList (GraphQLID)) }
       },
       resolve(parent, args) {
         let book = new Book({
           title: args.title,
-          authorId: args.authorId
+          authorsId: args.authorsId
         });
         return book.save();
       }
