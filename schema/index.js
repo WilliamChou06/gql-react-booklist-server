@@ -8,7 +8,8 @@ const {
   GraphQLString,
   GraphQLList,
   GraphQLSchema,
-  GraphQLID
+  GraphQLID,
+  GraphQLNonNull
 } = graphql;
 
 const BookType = new GraphQLObjectType({
@@ -16,9 +17,11 @@ const BookType = new GraphQLObjectType({
   fields: () => ({
     id: { type: GraphQLID },
     title: { type: GraphQLString },
-    authors: {
-      type: new GraphQLList(AuthorType),
-      resolve(parent, args) {}
+    author: {
+      type: AuthorType,
+      resolve(parent, args) {
+        return Author.findById(parent.authorId);
+      }
     }
   })
 });
@@ -30,7 +33,9 @@ const AuthorType = new GraphQLObjectType({
     name: { type: GraphQLString },
     books: {
       type: new GraphQLList(BookType),
-      resolve(parent, args) {}
+      resolve(parent, args) {
+        return Book.find({ authorId: parent.id });
+      }
     }
   })
 });
@@ -41,12 +46,28 @@ const RootQuery = new GraphQLObjectType({
     book: {
       type: BookType,
       args: { id: { type: GraphQLID } },
-      resolve(parent, args) {}
+      resolve(parent, args) {
+        return Book.findById(args.id);
+      }
     },
     author: {
       type: AuthorType,
       args: { id: { type: GraphQLID } },
-      resolve(parent, args) {}
+      resolve(parent, args) {
+        return Author.findById(args.id);
+      }
+    },
+    books: {
+      type: new GraphQLList(BookType),
+      resolve(parent, args) {
+        return Book.find();
+      }
+    },
+    authors: {
+      type: new GraphQLList(AuthorType),
+      resolve() {
+        return Author.find();
+      }
     }
   }
 });
@@ -57,13 +78,27 @@ const Mutation = new GraphQLObjectType({
     addAuthor: {
       type: AuthorType,
       args: {
-        name: { type: GraphQLString }
+        name: { type: new GraphQLNonNull(GraphQLString) }
       },
       resolve(parent, args) {
         let author = new Author({
           name: args.name
         });
         return author.save();
+      }
+    },
+    addBook: {
+      type: BookType,
+      args: {
+        title: { type: new GraphQLNonNull(GraphQLString) },
+        authorId: { type: new GraphQLNonNull(GraphQLID) }
+      },
+      resolve(parent, args) {
+        let book = new Book({
+          title: args.title,
+          authorId: args.authorId
+        });
+        return book.save();
       }
     }
   }
