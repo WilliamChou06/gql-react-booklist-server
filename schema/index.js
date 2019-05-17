@@ -14,7 +14,12 @@ const BookType = new GraphQLObjectType({
   fields: () => ({
     id: { type: GraphQLID },
     title: { type: GraphQLString },
-    authors: new GraphQLList(AuthorType)
+    authors: {
+      type: new GraphQLList(AuthorType),
+      resolve(parent, args) {
+
+      }
+    }
   })
 });
 
@@ -23,7 +28,12 @@ const AuthorType = new GraphQLObjectType({
   fields: () => ({
     id: { type: GraphQLID },
     name: { type: GraphQLString },
-    books: new GraphQLList(BookType)
+    books: {
+      type: new GraphQLList(BookType),
+      resolve(parent, args) {
+        
+      }
+    }
   })
 });
 
