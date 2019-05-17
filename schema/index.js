@@ -10,8 +10,7 @@ const {
   GraphQLList,
   GraphQLSchema,
   GraphQLID,
-  GraphQLNonNull,
-  GraphQLScalarType
+  GraphQLNonNull
 } = graphql;
 
 const { GraphQLDateTime } = graphqlIsoDate;

@@ -2,9 +2,14 @@ const express = require('express');
 const graphqlHTTP = require('express-graphql');
 const schema = require('./schema');
 const mongoose = require('mongoose');
+const cors = require('cors');
 
 const app = express();
 
+// CORS config
+app.use(cors())
+
+// MongoDB connection
 mongoose.connect(
   'mongodb://william:test123@ds139775.mlab.com:39775/codingband-test-server'
 );
