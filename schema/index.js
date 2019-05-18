@@ -13,7 +13,10 @@ const {
   GraphQLNonNull
 } = graphql;
 
+// Dependency for GraphQL dates
 const { GraphQLDateTime } = graphqlIsoDate;
+
+// Types
 
 const BookType = new GraphQLObjectType({
   name: 'Book',
@@ -50,6 +53,7 @@ const AuthorType = new GraphQLObjectType({
   })
 });
 
+// Root query
 const RootQuery = new GraphQLObjectType({
   name: 'RootQuery',
   fields: {

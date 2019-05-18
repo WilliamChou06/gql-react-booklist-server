@@ -6,7 +6,7 @@ const cors = require('cors');
 
 const app = express();
 
-// CORS config
+// CORS config | Allow cross-origin requests
 app.use(cors())
 
 // MongoDB connection
@@ -17,8 +17,11 @@ mongoose.connection.once('open', () => {
   console.log('Connected to DB')
 })
 
+// Port config
 const PORT = 4000 || process.env.PORT;
 
+
+// GraphQL middleware
 app.use(
   '/graphql',
   graphqlHTTP({
