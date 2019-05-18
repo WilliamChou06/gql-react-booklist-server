@@ -8,6 +8,9 @@
   },
   "author": "William Chou",
   "license": "ISC",
+  "scripts": {
+    "start": "node index"
+  },
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.17.0",
